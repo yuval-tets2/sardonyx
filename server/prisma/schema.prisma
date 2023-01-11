@@ -1,5 +1,5 @@
-datasource postgres {
-  provider = "postgresql"
+datasource mysql {
+  provider = "mysql"
   url      = env("DB_URL")
 }
 
@@ -8,14 +8,18 @@ generator client {
 }
 
 model User {
-  createdAt DateTime @default(now())
-  firstName String?
-  id        String   @id @default(cuid())
-  lastName  String?
-  password  String
-  roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
+  createdAt        DateTime  @default(now())
+  createdStudetns  Student[] @relation(name: "createdBy")
+  firstName        Int?
+  id               String    @id @default(cuid())
+  lastName         String?
+  modifiedStudents Student[] @relation(name: "modifiedBy")
+  password         String
+  profile          Profile?  @relation(fields: [profileId], references: [id])
+  profileId        String?   @unique
+  roles            Json
+  updatedAt        DateTime  @updatedAt
+  username         String    @unique
 }
 
 model Customer {
@@ -37,4 +41,32 @@ model Event {
   id         String    @id @default(cuid())
   name       String?
   updatedAt  DateTime  @updatedAt
+}
+
+model Student {
+  age          String?
+  createdAt    DateTime               @default(now())
+  createdBy    User?                  @relation(name: "createdBy", fields: [createdById], references: [id])
+  createdById  String?
+  department   EnumStudentDepartment?
+  id           String                 @id @default(cuid())
+  modifiedBy   User?                  @relation(name: "modifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+  name         String?
+  rank         String?
+  updatedAt    DateTime               @updatedAt
+}
+
+model Profile {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+  user      User?
+}
+
+enum EnumStudentDepartment {
+  Cs
+  Law
+  It
+  Woo
 }
