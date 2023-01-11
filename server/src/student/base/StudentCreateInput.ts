@@ -11,59 +11,58 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StudentUpdateManyWithoutUsersInput } from "./StudentUpdateManyWithoutUsersInput";
-import { ValidateNested, IsOptional, IsString, IsJSON } from "class-validator";
+import { IsString, IsOptional, ValidateNested, IsEnum } from "class-validator";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import { Type } from "class-transformer";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
+import { EnumStudentDepartment } from "./EnumStudentDepartment";
 
 @InputType()
-class UserUpdateInput {
+class StudentCreateInput {
   @ApiProperty({
     required: false,
-    type: () => StudentUpdateManyWithoutUsersInput,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  age?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
   })
   @ValidateNested()
-  @Type(() => StudentUpdateManyWithoutUsersInput)
+  @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  @Field(() => StudentUpdateManyWithoutUsersInput, {
+  @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  createdStudetns?: StudentUpdateManyWithoutUsersInput;
+  createdBy?: UserWhereUniqueInput | null;
 
   @ApiProperty({
     required: false,
-    type: String,
+    enum: EnumStudentDepartment,
   })
-  @IsString()
+  @IsEnum(EnumStudentDepartment)
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => EnumStudentDepartment, {
     nullable: true,
   })
-  firstName?: string | null;
+  department?: "Cs" | "Law" | "It" | "Woo" | null;
 
   @ApiProperty({
     required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => StudentUpdateManyWithoutUsersInput,
+    type: () => UserWhereUniqueInput,
   })
   @ValidateNested()
-  @Type(() => StudentUpdateManyWithoutUsersInput)
+  @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  @Field(() => StudentUpdateManyWithoutUsersInput, {
+  @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  modifiedStudents?: StudentUpdateManyWithoutUsersInput;
+  modifiedBy?: UserWhereUniqueInput | null;
 
   @ApiProperty({
     required: false,
@@ -74,17 +73,7 @@ class UserUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  password?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  roles?: InputJsonValue;
+  name?: string | null;
 
   @ApiProperty({
     required: false,
@@ -95,7 +84,7 @@ class UserUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  username?: string;
+  rank?: string | null;
 }
 
-export { UserUpdateInput };
+export { StudentCreateInput };

@@ -12,19 +12,29 @@ https://docs.amplication.com/how-to/custom-code
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
+  IsString,
+  IsOptional,
   IsDate,
   ValidateNested,
-  IsOptional,
-  IsString,
-  IsJSON,
+  IsEnum,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { Student } from "../../student/base/Student";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import { User } from "../../user/base/User";
+import { EnumStudentDepartment } from "./EnumStudentDepartment";
 
 @ObjectType()
-class User {
+class Student {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  age!: string | null;
+
   @ApiProperty({
     required: true,
   })
@@ -35,23 +45,23 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: () => [Student],
+    type: () => User,
   })
   @ValidateNested()
-  @Type(() => Student)
+  @Type(() => User)
   @IsOptional()
-  createdStudetns?: Array<Student>;
+  createdBy?: User | null;
 
   @ApiProperty({
     required: false,
-    type: String,
+    enum: EnumStudentDepartment,
   })
-  @IsString()
+  @IsEnum(EnumStudentDepartment)
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => EnumStudentDepartment, {
     nullable: true,
   })
-  firstName!: string | null;
+  department?: "Cs" | "Law" | "It" | "Woo" | null;
 
   @ApiProperty({
     required: true,
@@ -63,6 +73,15 @@ class User {
 
   @ApiProperty({
     required: false,
+    type: () => User,
+  })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  modifiedBy?: User | null;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -70,23 +89,18 @@ class User {
   @Field(() => String, {
     nullable: true,
   })
-  lastName!: string | null;
+  name!: string | null;
 
   @ApiProperty({
     required: false,
-    type: () => [Student],
+    type: String,
   })
-  @ValidateNested()
-  @Type(() => Student)
+  @IsString()
   @IsOptional()
-  modifiedStudents?: Array<Student>;
-
-  @ApiProperty({
-    required: true,
+  @Field(() => String, {
+    nullable: true,
   })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
+  rank!: string | null;
 
   @ApiProperty({
     required: true,
@@ -95,14 +109,6 @@ class User {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
 }
 
-export { User };
+export { Student };
