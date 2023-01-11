@@ -27,6 +27,9 @@ import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { StudentFindManyArgs } from "../../student/base/StudentFindManyArgs";
+import { Student } from "../../student/base/Student";
+import { StudentWhereUniqueInput } from "../../student/base/StudentWhereUniqueInput";
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
@@ -46,12 +49,27 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
-      data: data,
+      data: {
+        ...data,
+
+        profile: data.profile
+          ? {
+              connect: data.profile,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
         firstName: true,
         id: true,
         lastName: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+
         roles: true,
         updatedAt: true,
         username: true,
@@ -78,6 +96,13 @@ export class UserControllerBase {
         firstName: true,
         id: true,
         lastName: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+
         roles: true,
         updatedAt: true,
         username: true,
@@ -105,6 +130,13 @@ export class UserControllerBase {
         firstName: true,
         id: true,
         lastName: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+
         roles: true,
         updatedAt: true,
         username: true,
@@ -135,12 +167,27 @@ export class UserControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          profile: data.profile
+            ? {
+                connect: data.profile,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
           firstName: true,
           id: true,
           lastName: true,
+
+          profile: {
+            select: {
+              id: true,
+            },
+          },
+
           roles: true,
           updatedAt: true,
           username: true,
@@ -176,6 +223,13 @@ export class UserControllerBase {
           firstName: true,
           id: true,
           lastName: true,
+
+          profile: {
+            select: {
+              id: true,
+            },
+          },
+
           roles: true,
           updatedAt: true,
           username: true,
@@ -189,5 +243,231 @@ export class UserControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @nestAccessControl.UseRoles({
+    resource: "Student",
+    action: "read",
+    possession: "any",
+  })
+  @common.Get("/:id/createdStudetns")
+  @ApiNestedQuery(StudentFindManyArgs)
+  async findManyCreatedStudetns(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Student[]> {
+    const query = plainToClass(StudentFindManyArgs, request.query);
+    const results = await this.service.findCreatedStudetns(params.id, {
+      ...query,
+      select: {
+        age: true,
+        createdAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        department: true,
+        id: true,
+
+        modifiedBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        name: true,
+        rank: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Post("/:id/createdStudetns")
+  async connectCreatedStudetns(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      createdStudetns: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Patch("/:id/createdStudetns")
+  async updateCreatedStudetns(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      createdStudetns: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Delete("/:id/createdStudetns")
+  async disconnectCreatedStudetns(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      createdStudetns: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @nestAccessControl.UseRoles({
+    resource: "Student",
+    action: "read",
+    possession: "any",
+  })
+  @common.Get("/:id/modifiedStudents")
+  @ApiNestedQuery(StudentFindManyArgs)
+  async findManyModifiedStudents(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Student[]> {
+    const query = plainToClass(StudentFindManyArgs, request.query);
+    const results = await this.service.findModifiedStudents(params.id, {
+      ...query,
+      select: {
+        age: true,
+        createdAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        department: true,
+        id: true,
+
+        modifiedBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        name: true,
+        rank: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Post("/:id/modifiedStudents")
+  async connectModifiedStudents(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      modifiedStudents: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Patch("/:id/modifiedStudents")
+  async updateModifiedStudents(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      modifiedStudents: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @common.Delete("/:id/modifiedStudents")
+  async disconnectModifiedStudents(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StudentWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      modifiedStudents: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }
