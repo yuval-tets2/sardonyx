@@ -11,23 +11,38 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { StudentListRelationFilter } from "../../student/base/StudentListRelationFilter";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IntNullableFilter } from "../../util/IntNullableFilter";
 import { StringFilter } from "../../util/StringFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserWhereInput {
   @ApiProperty({
     required: false,
-    type: StringNullableFilter,
+    type: () => StudentListRelationFilter,
   })
-  @Type(() => StringNullableFilter)
+  @ValidateNested()
+  @Type(() => StudentListRelationFilter)
   @IsOptional()
-  @Field(() => StringNullableFilter, {
+  @Field(() => StudentListRelationFilter, {
     nullable: true,
   })
-  firstName?: StringNullableFilter;
+  createdStudetns?: StudentListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: IntNullableFilter,
+  })
+  @Type(() => IntNullableFilter)
+  @IsOptional()
+  @Field(() => IntNullableFilter, {
+    nullable: true,
+  })
+  firstName?: IntNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -50,6 +65,30 @@ class UserWhereInput {
     nullable: true,
   })
   lastName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => StudentListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => StudentListRelationFilter)
+  @IsOptional()
+  @Field(() => StudentListRelationFilter, {
+    nullable: true,
+  })
+  modifiedStudents?: StudentListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ProfileWhereUniqueInput, {
+    nullable: true,
+  })
+  profile?: ProfileWhereUniqueInput;
 
   @ApiProperty({
     required: false,

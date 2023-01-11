@@ -17,7 +17,16 @@ import { SortOrder } from "../../util/SortOrder";
   isAbstract: true,
   description: undefined,
 })
-class UserOrderByInput {
+class StudentOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  age?: SortOrder;
+
   @ApiProperty({
     required: false,
     enum: ["asc", "desc"],
@@ -34,7 +43,16 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  firstName?: SortOrder;
+  createdById?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  department?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -52,7 +70,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  lastName?: SortOrder;
+  modifiedById?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -61,7 +79,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  password?: SortOrder;
+  name?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -70,16 +88,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  profileId?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  roles?: SortOrder;
+  rank?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -89,15 +98,6 @@ class UserOrderByInput {
     nullable: true,
   })
   updatedAt?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  username?: SortOrder;
 }
 
-export { UserOrderByInput };
+export { StudentOrderByInput };
