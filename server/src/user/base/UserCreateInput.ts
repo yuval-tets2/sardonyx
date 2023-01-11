@@ -11,7 +11,16 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsJSON } from "class-validator";
+import { StudentCreateNestedManyWithoutUsersInput } from "./StudentCreateNestedManyWithoutUsersInput";
+import {
+  ValidateNested,
+  IsOptional,
+  IsInt,
+  IsString,
+  IsJSON,
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
@@ -19,14 +28,26 @@ import { InputJsonValue } from "../../types";
 class UserCreateInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: () => StudentCreateNestedManyWithoutUsersInput,
   })
-  @IsString()
+  @ValidateNested()
+  @Type(() => StudentCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => StudentCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
-  firstName?: string | null;
+  createdStudetns?: StudentCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  firstName?: number | null;
 
   @ApiProperty({
     required: false,
@@ -40,12 +61,36 @@ class UserCreateInput {
   lastName?: string | null;
 
   @ApiProperty({
+    required: false,
+    type: () => StudentCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => StudentCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => StudentCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  modifiedStudents?: StudentCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   password!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ProfileWhereUniqueInput, {
+    nullable: true,
+  })
+  profile?: ProfileWhereUniqueInput | null;
 
   @ApiProperty({
     required: true,
