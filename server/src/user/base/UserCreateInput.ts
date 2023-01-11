@@ -11,12 +11,26 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsJSON } from "class-validator";
+import { StudentCreateNestedManyWithoutUsersInput } from "./StudentCreateNestedManyWithoutUsersInput";
+import { ValidateNested, IsOptional, IsString, IsJSON } from "class-validator";
+import { Type } from "class-transformer";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => StudentCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => StudentCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => StudentCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  createdStudetns?: StudentCreateNestedManyWithoutUsersInput;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -38,6 +52,18 @@ class UserCreateInput {
     nullable: true,
   })
   lastName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => StudentCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => StudentCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => StudentCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  modifiedStudents?: StudentCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: true,
