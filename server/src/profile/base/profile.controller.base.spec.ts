@@ -13,48 +13,32 @@ import { ACLModule } from "../../auth/acl.module";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { map } from "rxjs";
-import { UserController } from "../user.controller";
-import { UserService } from "../user.service";
+import { ProfileController } from "../profile.controller";
+import { ProfileService } from "../profile.service";
 
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 const CREATE_RESULT = {
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 const FIND_MANY_RESULT = [
   {
     createdAt: new Date(),
-    firstName: 42,
     id: "exampleId",
-    lastName: "exampleLastName",
-    password: "examplePassword",
     updatedAt: new Date(),
-    username: "exampleUsername",
   },
 ];
 const FIND_ONE_RESULT = {
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 
 const service = {
@@ -104,18 +88,18 @@ const aclValidateRequestInterceptor = {
   },
 };
 
-describe("User", () => {
+describe("Profile", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
-          provide: UserService,
+          provide: ProfileService,
           useValue: service,
         },
       ],
-      controllers: [UserController],
+      controllers: [ProfileController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
@@ -132,9 +116,9 @@ describe("User", () => {
     await app.init();
   });
 
-  test("POST /users", async () => {
+  test("POST /profiles", async () => {
     await request(app.getHttpServer())
-      .post("/users")
+      .post("/profiles")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
       .expect({
@@ -144,9 +128,9 @@ describe("User", () => {
       });
   });
 
-  test("GET /users", async () => {
+  test("GET /profiles", async () => {
     await request(app.getHttpServer())
-      .get("/users")
+      .get("/profiles")
       .expect(HttpStatus.OK)
       .expect([
         {
@@ -157,9 +141,9 @@ describe("User", () => {
       ]);
   });
 
-  test("GET /users/:id non existing", async () => {
+  test("GET /profiles/:id non existing", async () => {
     await request(app.getHttpServer())
-      .get(`${"/users"}/${nonExistingId}`)
+      .get(`${"/profiles"}/${nonExistingId}`)
       .expect(HttpStatus.NOT_FOUND)
       .expect({
         statusCode: HttpStatus.NOT_FOUND,
@@ -168,9 +152,9 @@ describe("User", () => {
       });
   });
 
-  test("GET /users/:id existing", async () => {
+  test("GET /profiles/:id existing", async () => {
     await request(app.getHttpServer())
-      .get(`${"/users"}/${existingId}`)
+      .get(`${"/profiles"}/${existingId}`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -179,10 +163,10 @@ describe("User", () => {
       });
   });
 
-  test("POST /users existing resource", async () => {
+  test("POST /profiles existing resource", async () => {
     let agent = request(app.getHttpServer());
     await agent
-      .post("/users")
+      .post("/profiles")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
       .expect({
@@ -192,7 +176,7 @@ describe("User", () => {
       })
       .then(function () {
         agent
-          .post("/users")
+          .post("/profiles")
           .send(CREATE_INPUT)
           .expect(HttpStatus.CONFLICT)
           .expect({

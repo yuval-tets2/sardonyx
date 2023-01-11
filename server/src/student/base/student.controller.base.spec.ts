@@ -13,48 +13,44 @@ import { ACLModule } from "../../auth/acl.module";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { map } from "rxjs";
-import { UserController } from "../user.controller";
-import { UserService } from "../user.service";
+import { StudentController } from "../student.controller";
+import { StudentService } from "../student.service";
 
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  age: "exampleAge",
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  name: "exampleName",
+  rank: "exampleRank",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 const CREATE_RESULT = {
+  age: "exampleAge",
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  name: "exampleName",
+  rank: "exampleRank",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 const FIND_MANY_RESULT = [
   {
+    age: "exampleAge",
     createdAt: new Date(),
-    firstName: 42,
     id: "exampleId",
-    lastName: "exampleLastName",
-    password: "examplePassword",
+    name: "exampleName",
+    rank: "exampleRank",
     updatedAt: new Date(),
-    username: "exampleUsername",
   },
 ];
 const FIND_ONE_RESULT = {
+  age: "exampleAge",
   createdAt: new Date(),
-  firstName: 42,
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  name: "exampleName",
+  rank: "exampleRank",
   updatedAt: new Date(),
-  username: "exampleUsername",
 };
 
 const service = {
@@ -104,18 +100,18 @@ const aclValidateRequestInterceptor = {
   },
 };
 
-describe("User", () => {
+describe("Student", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
-          provide: UserService,
+          provide: StudentService,
           useValue: service,
         },
       ],
-      controllers: [UserController],
+      controllers: [StudentController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
@@ -132,9 +128,9 @@ describe("User", () => {
     await app.init();
   });
 
-  test("POST /users", async () => {
+  test("POST /students", async () => {
     await request(app.getHttpServer())
-      .post("/users")
+      .post("/students")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
       .expect({
@@ -144,9 +140,9 @@ describe("User", () => {
       });
   });
 
-  test("GET /users", async () => {
+  test("GET /students", async () => {
     await request(app.getHttpServer())
-      .get("/users")
+      .get("/students")
       .expect(HttpStatus.OK)
       .expect([
         {
@@ -157,9 +153,9 @@ describe("User", () => {
       ]);
   });
 
-  test("GET /users/:id non existing", async () => {
+  test("GET /students/:id non existing", async () => {
     await request(app.getHttpServer())
-      .get(`${"/users"}/${nonExistingId}`)
+      .get(`${"/students"}/${nonExistingId}`)
       .expect(HttpStatus.NOT_FOUND)
       .expect({
         statusCode: HttpStatus.NOT_FOUND,
@@ -168,9 +164,9 @@ describe("User", () => {
       });
   });
 
-  test("GET /users/:id existing", async () => {
+  test("GET /students/:id existing", async () => {
     await request(app.getHttpServer())
-      .get(`${"/users"}/${existingId}`)
+      .get(`${"/students"}/${existingId}`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -179,10 +175,10 @@ describe("User", () => {
       });
   });
 
-  test("POST /users existing resource", async () => {
+  test("POST /students existing resource", async () => {
     let agent = request(app.getHttpServer());
     await agent
-      .post("/users")
+      .post("/students")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
       .expect({
@@ -192,7 +188,7 @@ describe("User", () => {
       })
       .then(function () {
         agent
-          .post("/users")
+          .post("/students")
           .send(CREATE_INPUT)
           .expect(HttpStatus.CONFLICT)
           .expect({

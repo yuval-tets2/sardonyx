@@ -19,33 +19,31 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { User } from "./User";
-import { StudentFindManyArgs } from "../../student/base/StudentFindManyArgs";
-import { Student } from "../../student/base/Student";
-import { Profile } from "../../profile/base/Profile";
-import { UserService } from "../user.service";
+import { CreateProfileArgs } from "./CreateProfileArgs";
+import { UpdateProfileArgs } from "./UpdateProfileArgs";
+import { DeleteProfileArgs } from "./DeleteProfileArgs";
+import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
+import { ProfileFindUniqueArgs } from "./ProfileFindUniqueArgs";
+import { Profile } from "./Profile";
+import { User } from "../../user/base/User";
+import { ProfileService } from "../profile.service";
 
-@graphql.Resolver(() => User)
+@graphql.Resolver(() => Profile)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-export class UserResolverBase {
+export class ProfileResolverBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: ProfileService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "read",
     possession: "any",
   })
-  async _usersMeta(
-    @graphql.Args() args: UserFindManyArgs
+  async _profilesMeta(
+    @graphql.Args() args: ProfileFindManyArgs
   ): Promise<MetaQueryPayload> {
     const results = await this.service.count({
       ...args,
@@ -58,24 +56,28 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [User])
+  @graphql.Query(() => [Profile])
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "read",
     possession: "any",
   })
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
+  async profiles(
+    @graphql.Args() args: ProfileFindManyArgs
+  ): Promise<Profile[]> {
     return this.service.findMany(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => User, { nullable: true })
+  @graphql.Query(() => Profile, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "read",
     possession: "own",
   })
-  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
+  async profile(
+    @graphql.Args() args: ProfileFindUniqueArgs
+  ): Promise<Profile | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
@@ -84,21 +86,23 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Profile)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "create",
     possession: "any",
   })
-  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
+  async createProfile(
+    @graphql.Args() args: CreateProfileArgs
+  ): Promise<Profile> {
     return await this.service.create({
       ...args,
       data: {
         ...args.data,
 
-        profile: args.data.profile
+        user: args.data.user
           ? {
-              connect: args.data.profile,
+              connect: args.data.user,
             }
           : undefined,
       },
@@ -106,22 +110,24 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Profile)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "update",
     possession: "any",
   })
-  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
+  async updateProfile(
+    @graphql.Args() args: UpdateProfileArgs
+  ): Promise<Profile | null> {
     try {
       return await this.service.update({
         ...args,
         data: {
           ...args.data,
 
-          profile: args.data.profile
+          user: args.data.user
             ? {
-                connect: args.data.profile,
+                connect: args.data.user,
               }
             : undefined,
         },
@@ -136,13 +142,15 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Profile)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Profile",
     action: "delete",
     possession: "any",
   })
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+  async deleteProfile(
+    @graphql.Args() args: DeleteProfileArgs
+  ): Promise<Profile | null> {
     try {
       return await this.service.delete(args);
     } catch (error) {
@@ -156,54 +164,14 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Student])
+  @graphql.ResolveField(() => User, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "Student",
+    resource: "User",
     action: "read",
     possession: "any",
   })
-  async createdStudetns(
-    @graphql.Parent() parent: User,
-    @graphql.Args() args: StudentFindManyArgs
-  ): Promise<Student[]> {
-    const results = await this.service.findCreatedStudetns(parent.id, args);
-
-    if (!results) {
-      return [];
-    }
-
-    return results;
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Student])
-  @nestAccessControl.UseRoles({
-    resource: "Student",
-    action: "read",
-    possession: "any",
-  })
-  async modifiedStudents(
-    @graphql.Parent() parent: User,
-    @graphql.Args() args: StudentFindManyArgs
-  ): Promise<Student[]> {
-    const results = await this.service.findModifiedStudents(parent.id, args);
-
-    if (!results) {
-      return [];
-    }
-
-    return results;
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Profile, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Profile",
-    action: "read",
-    possession: "any",
-  })
-  async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
-    const result = await this.service.getProfile(parent.id);
+  async user(@graphql.Parent() parent: Profile): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
 
     if (!result) {
       return null;
