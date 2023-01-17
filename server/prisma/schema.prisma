@@ -1,5 +1,5 @@
-datasource postgres {
-  provider = "postgresql"
+datasource mongo {
+  provider = "mongodb"
   url      = env("DB_URL")
 }
 
@@ -11,7 +11,7 @@ model User {
   createdAt        DateTime  @default(now())
   createdStudetns  Student[] @relation(name: "createdBy")
   firstName        Int?
-  id               String    @id @default(cuid())
+  id               String    @id @default(auto()) @map("_id") @mongo.ObjectId
   lastName         String?
   modifiedStudents Student[] @relation(name: "modifiedBy")
   password         String
@@ -27,7 +27,7 @@ model Customer {
   email     String?
   events    Event[]
   firstName String?
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @mongo.ObjectId
   lastName  String?
   phone     String?
   updatedAt DateTime @updatedAt
@@ -38,7 +38,7 @@ model Event {
   customer   Customer? @relation(fields: [customerId], references: [id])
   customerId String?
   date       DateTime?
-  id         String    @id @default(cuid())
+  id         String    @id @default(auto()) @map("_id") @mongo.ObjectId
   name       String?
   updatedAt  DateTime  @updatedAt
 }
@@ -49,7 +49,7 @@ model Student {
   createdBy    User?                  @relation(name: "createdBy", fields: [createdById], references: [id])
   createdById  String?
   department   EnumStudentDepartment?
-  id           String                 @id @default(cuid())
+  id           String                 @id @default(auto()) @map("_id") @mongo.ObjectId
   modifiedBy   User?                  @relation(name: "modifiedBy", fields: [modifiedById], references: [id])
   modifiedById String?
   name         String?
@@ -59,7 +59,7 @@ model Student {
 
 model Profile {
   createdAt DateTime @default(now())
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @mongo.ObjectId
   updatedAt DateTime @updatedAt
   user      User?
 }
